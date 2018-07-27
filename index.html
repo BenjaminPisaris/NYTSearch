@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
+    <title>New York Times Search</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron bg-dark text-white text-center display-3">
+            <i class="far fa-newspaper"></i> New York Times Search
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card border border-dark">
+                    <div class="card-header text-white bg-dark mb-3">
+                        <i class="far fa-list-alt"></i> Search Parameters
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="search-term">Search Term:</label>
+                                <br>
+                                <input id="search-term">
+                            </div>
+                            <div class="form-group">
+                                <label for="recordnumber">Number of Records to Retrieve:</label>
+                                <br>
+                                <select class="form-control" id="record-number">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="start-year">Start Year (Optional):</label>
+                                <br>
+                                <input id="start-year">
+                            </div>
+                            <div class="form-group">
+                                <label for="end-year">End Year (Optional):</label>
+                                <br>
+                                <input id="end-year">
+                            </div>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-search"></i> Search</button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-trash-alt"></i> Clear Results</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card border border-dark" id="article-container">
+            <div class="card-header text-white bg-dark mb-3">
+                <i class="fas fa-th"></i> Top Articles
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function(){
+        var searchTerm = "North Korea"
+        // var searchTerm = $("#searchTerm").val().trim();
+        var startYear = 20180601;
+        // var startYear = parseInt($("#startYear").val() + "0101");
+        var endYear = 20180723;
+        // var endYear = parseInt($("#endYear").val() + "0727");
+        // var recordNumber = 5;
+        var recordNumber = $("#recordNumber").val();
+    
+        var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+        queryURL += '?' + $.param({
+        'api-key': "1cb66c9687ab49168789500dc5b56141",
+        'q': searchTerm,
+        'begin_date': startYear,
+        'end_date': endYear
+        });
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function(data){
+            var articles = data.response.docs;
+            $("#searchButton").click(function(){
+                event.preventDefault();
+                console.log("clicked");
+                for (var i = 0; i < recordNumber ; i++){
+                    var articleDiv = $("<div class='articeDiv'>").text(articles[i].headline.main);
+                    var articleSource = $("<p class='articleSource'>").text(articles[i].source);
+                    articleDiv.append(articleSource);
+                    $("#article-container").prepend(articleDiv);
+                }
+            });
+            $("#clearResults").click(function(){
+                event.preventDefault();
+                $("#article-container").empty();
+            })
+        });
+    });
+</script>
+</body>
+
+</html>
